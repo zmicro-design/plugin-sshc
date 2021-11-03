@@ -40,10 +40,20 @@ sshc::remove() {
     exit 1
   fi
 
+  if [ "$name" = "default" ]; then
+    log::error "[sshc::remove] cannot remove default"
+    exit 1
+  fi
+
+  local current=$(sshc::current)
   local cache_config=$PLUGIN_SSHC_LIST_DATA/$name
 
   if [ -f "$cache_config" ]; then
     rm $cache_config
+  fi
+
+  if [ "$name" = "$current" ]; then
+    echo "default" | fs::write $PLUGIN_SSHC_CURRENT 
   fi
 }
 
