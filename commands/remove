@@ -1,0 +1,25 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zsshc remove"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local name=$1
+
+  sshc::remove $@
+  
+  log::success "remove ${name} success"
+}
+
+run() {
+  core $@
+}
+
+run $@

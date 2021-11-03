@@ -1,0 +1,29 @@
+#!/bin/bash
+
+load inquirer
+
+help() {
+  echo "Usage:"
+  echo "  zsshc clear"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local yesno=('Yes' 'No')
+  inquirer::select "is it ok ?" yesno answer
+  if [ "$answer" != "Yes" ]; then
+    exit 0
+  fi
+
+  sshc::clear
+}
+
+run() {
+  core $@
+}
+
+run $@

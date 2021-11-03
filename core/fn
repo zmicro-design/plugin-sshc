@@ -1,0 +1,98 @@
+#!/bin/bash
+
+sshc::add() {
+  local name=$1
+  local config_path=$2
+
+  if [ -z "$name" ]; then
+    log::error "[sshc::add] name is required"
+    exit 1
+  fi
+
+  if [ -z "$config_path" ]; then
+    log::error "[sshc::add] config_path is required"
+    exit 1
+  fi
+
+  if [ ! -f "$config_path" ]; then
+    log::error "[sshc::add] config_path is not a valid file"
+    exit 1
+  fi
+
+  local cache_config=$PLUGIN_SSHC_LIST_DATA/$name
+  if [ -f "$cache_config" ]; then
+    log::error "[sshc::add] name($name) is already exist, please use another"
+    exit 1
+  fi
+
+  cp $config_path $cache_config
+
+  local current=$(cat $PLUGIN_SSHC_CURRENT)
+  if [ "$current" = "" ]; then
+    sshc::use $name
+  fi
+}
+
+sshc::remove() {
+  local name=$1
+  if [ -z "$name" ]; then
+    log::error "[sshc::remove] name is required"
+    exit 1
+  fi
+
+  local cache_config=$PLUGIN_SSHC_LIST_DATA/$name
+
+  if [ -f "$cache_config" ]; then
+    rm $cache_config
+  fi
+}
+
+sshc::list() {
+  local list=$(ls $PLUGIN_SSHC_LIST_DATA)
+
+  echo $list
+}
+
+sshc::use() {
+  local name=$1
+  if [ -z "$name" ]; then
+    log::error "[sshc::use] name is required"
+    exit 1
+  fi
+
+  local cache_config=$PLUGIN_SSHC_LIST_DATA/$name
+
+  if [ ! -f "$cache_config" ]; then
+    log::error "[sshc::use] config ${name} not found"
+    exit 1
+  fi
+
+  echo "${name}" | fs::write $PLUGIN_SSHC_CURRENT 
+
+  cp $cache_config $PLUGIN_SSHC_SSH_CONFIG
+}
+
+sshc::current() {
+  local current=$(cat $PLUGIN_SSHC_CURRENT)
+
+  if [ -z "$current" ]; then
+    sshc::add default $PLUGIN_SSHC_SSH_CONFIG
+    current=default
+  fi
+
+  echo $current
+}
+
+sshc::clear() {
+  rm -rf $PLUGIN_SSHC_LIST_DATA/*
+
+  echo > $PLUGIN_SSHC_CURRENT
+}
+
+export -f sshc::add
+export -f sshc::remove
+export -f sshc::list
+export -f sshc::use
+export -f sshc::clear
+
+export -f sshc::current

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+load inquirer
+
+help() {
+  echo "Usage:"
+  echo "  zsshc use"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local name=$1
+  
+  if [ -z "$name" ]; then
+    local availables=($(sshc::list))
+    inquirer::select "Select an service ?" availables name
+  fi
+
+  sshc::use $name
+}
+
+run() {
+  core $@
+}
+
+run $@

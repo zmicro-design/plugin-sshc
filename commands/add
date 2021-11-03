@@ -1,0 +1,25 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zsshc add"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local name=$1
+
+  sshc::add $@
+
+  log::success "add ${name} success"
+}
+
+run() {
+  core $@
+}
+
+run $@

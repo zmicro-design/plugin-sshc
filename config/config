@@ -1,0 +1,19 @@
+export PLUGIN_SSHC_NAME=sshc
+
+export PLUGIN_SSHC_DATA=$(plugin::get_app_data_path $PLUGIN_SSHC_NAME)
+export PLUGIN_SSHC_LOGS=$(plugin::get_app_logs_path $PLUGIN_SSHC_NAME)
+export PLUGIN_SSHC_CONFIG=$(plugin::get_app_configs_path $PLUGIN_SSHC_NAME)/config
+
+export PLUGIN_SSHC_CURRENT=${PLUGIN_SSHC_DATA}/current
+export PLUGIN_SSHC_LIST_DATA=${PLUGIN_SSHC_DATA}/data
+
+export PLUGIN_SSHC_SSH_CONFIG=$HOME/.ssh/config
+
+if [ ! -f "$PLUGIN_SSHC_CURRENT" ]; then
+  touch $PLUGIN_SSHC_CURRENT
+fi
+
+if [ ! -d "$PLUGIN_SSHC_LIST_DATA" ]; then
+  mkdir $PLUGIN_SSHC_LIST_DATA
+fi
+

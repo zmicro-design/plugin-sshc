@@ -1,0 +1,25 @@
+#!/bin/bash
+
+load inquirer
+
+help() {
+  echo "Usage:"
+  echo "  zsshc use"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local current=$(sshc::current)
+
+  echo $current
+}
+
+run() {
+  core $@
+}
+
+run $@
