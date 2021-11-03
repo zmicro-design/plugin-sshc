@@ -17,7 +17,7 @@ core() {
   
   if [ -z "$name" ]; then
     local availables=($(sshc::list))
-    inquirer::select "Select an service ?" availables name
+    inquirer::select "Select ?" availables name
   fi
 
   sshc::use $name

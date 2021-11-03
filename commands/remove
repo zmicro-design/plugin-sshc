@@ -13,8 +13,13 @@ core() {
 
   local name=$1
 
+  if [ -z "$name" ]; then
+    local availables=($(sshc::list))
+    inquirer::select "Select ?" availables name
+  fi
+
   sshc::remove $@
-  
+
   log::success "remove ${name} success"
 }
 
