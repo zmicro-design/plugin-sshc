@@ -1,0 +1,34 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zsshc authorize add <ssh_public_key>"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local key=$@
+  if [ -z "$key" ]; then 
+    log::error "authorized key is required"
+    exit 1
+  fi
+
+  local id=$(echo $key | awk '{print $3}')
+  if [ -z "$id" ]; then
+    log::error "cannot found id in $key, please make sure it is a valid ssh public key"
+    exit 1
+  fi
+
+  sshc::add_auth $key
+  log::success "added id($(color::green ${id})) in $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH"
+}
+
+run() {
+  core $@
+}
+
+run $@

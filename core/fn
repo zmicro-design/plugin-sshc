@@ -99,6 +99,61 @@ sshc::clear() {
   echo > $PLUGIN_SSHC_CURRENT
 }
 
+sshc::has_auth() {
+  local id=$1
+  if [ -z "$id" ]; then 
+    log::error "[sshc::has_auth] id is required"
+    exit 1
+  fi
+
+  local id=$(cat $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH | grep $id | awk '{print $3}')
+  if [ -z "$id" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
+sshc::add_auth() {
+  local key=$@
+  if [ -z "$key" ]; then 
+    log::error "[sshc::add_auth] authorized key is required"
+    exit 1
+  fi
+
+  echo $key | fs::append $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH
+}
+
+sshc::remove_auth() {
+  local id=$1
+  if [ -z "$id" ]; then 
+    log::error "[sshc::remove_auth] id is required"
+    exit 1
+  fi
+
+  if [ "$(sshc::has_auth $id)" = "false" ]; then
+    log::error "[sshc::remove_auth] cannot found id(${id}), please check in $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH"
+    exit 1
+  fi
+  
+  fs::remove_line_has_str $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH "$id"
+}
+
+sshc::list_auth() {
+  local index=1
+  while read line; do
+    local id=$(echo $line | awk '{print $3}')
+    if [ -n "$id" ]; then
+      log::success "$index - $id"
+      index=$((index + 1))
+    fi
+  done < $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH
+
+  if [ "$index" = "1" ]; then
+    log::error "cannot found any keys in $PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH"
+  fi
+}
+
 export -f sshc::add
 export -f sshc::remove
 export -f sshc::list
@@ -106,3 +161,9 @@ export -f sshc::use
 export -f sshc::clear
 
 export -f sshc::current
+
+# Authorized Key
+export -f sshc::has_auth
+export -f sshc::add_auth
+export -f sshc::remove_auth
+export -f sshc::list_auth

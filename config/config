@@ -9,6 +9,8 @@ export PLUGIN_SSHC_LIST_DATA=${PLUGIN_SSHC_DATA}/data
 
 export PLUGIN_SSHC_SSH_CONFIG=$HOME/.ssh/config
 
+export PLUGIN_SSHC_SSH_AUTHORIZED_KEYS_PATH=$HOME/.ssh/authorized_keys
+
 if [ ! -f "$PLUGIN_SSHC_CURRENT" ]; then
   touch $PLUGIN_SSHC_CURRENT
 fi

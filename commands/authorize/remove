@@ -1,0 +1,29 @@
+#!/bin/bash
+
+help() {
+  echo "Usage:"
+  echo "  zsshc authorize remove <authorized_key_id>"
+}
+
+core() {
+  if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    help
+    exit 0
+  fi
+
+  local id=$1
+  if [ -z "$id" ]; then 
+    log::error "authorized id is required"
+    exit 1
+  fi
+
+  sshc::remove_auth $1
+
+  log::success "removed id($(color::green ${id}))"
+}
+
+run() {
+  core $@
+}
+
+run $@
